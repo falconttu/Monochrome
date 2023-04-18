@@ -170,7 +170,6 @@ void CMyGame::OnUpdate()
 			{
 				pKeys->Delete();
 				keys_collected++;
-
 			}
 		}
 	}
