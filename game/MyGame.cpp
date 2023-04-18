@@ -84,7 +84,6 @@ void CMyGame::OnUpdate()
 
 	// Pre-Update Position
 	CVector v0 = m_player.GetPos();
-
 	// Updates
 	for (CSprite* pSprite : m_sprites)
 	{
