@@ -3,8 +3,22 @@
 class CMyGame : public CGame
 {
 	// Define sprites and other instance variables here
+
 	CSprite m_player;		// Player sprite
 	CSpriteList m_sprites;	// All other sprites
+
+	// Health Bar Sprites
+	CSprite Healthbar10; // Max HP
+	CSprite Healthbar9; // 90 HP
+	CSprite Healthbar8; // 80 HP
+	CSprite Healthbar7; // 70 HP
+	CSprite Healthbar6; // 60 HP
+	CSprite Healthbar5; // 50 HP
+	CSprite Healthbar4; // 40 HP
+	CSprite Healthbar3; // 30 HP
+	CSprite Healthbar2; // 20 HP
+	CSprite Healthbar1; // 10 HP
+	CSprite Healthbar0; // 0 HP
 
 	// Player State
 	enum { STANDING, RUNNING, AIRBORNE, CLIMBING } m_state;
@@ -16,12 +30,14 @@ public:
 
 	bool gamewon;
 	int keys_collected;
+	int health;
 
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();
 	virtual void OnDraw(CGraphics* g);
 
 	// Game Life Cycle
+	virtual void HealthBarControl();
 	virtual void OnInitialize();
 	virtual void OnDisplayMenu();
 	virtual void OnStartGame();

@@ -6,6 +6,7 @@ CMyGame::CMyGame(void) :
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
+	
 }
 
 CMyGame::~CMyGame(void)
@@ -19,6 +20,18 @@ CMyGame::~CMyGame(void)
 void CMyGame::OnUpdate()
 {
 	Uint32 t = GetTime();
+	
+	Healthbar0.Update(t);
+	Healthbar1.Update(t);
+	Healthbar2.Update(t);
+	Healthbar3.Update(t);
+	Healthbar4.Update(t);
+	Healthbar5.Update(t);
+	Healthbar6.Update(t);
+	Healthbar7.Update(t);
+	Healthbar8.Update(t);
+	Healthbar9.Update(t);
+	Healthbar10.Update(t);
 
 	// Gravity
 	if (m_state == AIRBORNE)
@@ -91,6 +104,8 @@ void CMyGame::OnUpdate()
 		pSprite->Update(t);
 	}
 	m_player.Update(t);
+
+	HealthBarControl();
 
 	// Collisions
 	bool bTouchingPlatform = false;
@@ -236,6 +251,21 @@ void CMyGame::OnDraw(CGraphics* g)
 	}
 	m_player.Draw(g);
 
+
+	// Drawing The Health Bars
+
+	if (health == 100) Healthbar10.Draw(g);
+	if (health == 90) Healthbar9.Draw(g);
+	if (health == 80) Healthbar8.Draw(g);
+	if (health == 70) Healthbar7.Draw(g);
+	if (health == 60) Healthbar6.Draw(g);
+	if (health == 50) Healthbar5.Draw(g);
+	if (health == 40) Healthbar4.Draw(g);
+	if (health == 30) Healthbar3.Draw(g);
+	if (health == 20) Healthbar2.Draw(g);
+	if (health == 10) Healthbar1.Draw(g);
+	if (health == 0) Healthbar0.Draw(g);
+
 	//Game over texts
 	if (IsGameOverMode())
 	{
@@ -257,12 +287,123 @@ void CMyGame::OnDraw(CGraphics* g)
 	}
 }
 
+void CMyGame::HealthBarControl()
+{
+	health = m_player.GetHealth();
+
+	// Setting Up all the Health Bar Sprites
+	if (health == 100)
+	{
+		Healthbar10.LoadImageW("HealthBar.bmp", CColor::White());
+		Healthbar10.SetImage("HealthBar.bmp");
+		Healthbar10.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 90)
+	{
+		Healthbar9.LoadImageW("90Health.bmp", CColor::White());
+		Healthbar9.SetImage("90Health.bmp");
+		Healthbar9.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 80)
+	{
+		Healthbar8.LoadImageW("80Health.bmp", CColor::White());
+		Healthbar8.SetImage("80Health.bmp");
+		Healthbar8.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 70)
+	{
+		Healthbar7.LoadImageW("70Health.bmp", CColor::White());
+		Healthbar7.SetImage("70Health.bmp");
+		Healthbar7.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 60)
+	{
+		Healthbar6.LoadImageW("60Health.bmp", CColor::White());
+		Healthbar6.SetImage("60Health.bmp");
+		Healthbar6.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 50)
+	{
+		Healthbar5.LoadImageW("50Health.bmp", CColor::White());
+		Healthbar5.SetImage("50Health.bmp");
+		Healthbar5.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 40)
+	{
+		Healthbar4.LoadImageW("40Health.bmp", CColor::White());
+		Healthbar4.SetImage("40Health.bmp");
+		Healthbar4.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 30)
+	{
+		Healthbar3.LoadImageW("30Health.bmp", CColor::White());
+		Healthbar3.SetImage("30Health.bmp");
+		Healthbar3.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 20)
+	{
+		Healthbar2.LoadImageW("20Health.bmp", CColor::White());
+		Healthbar2.SetImage("20Health.bmp");
+		Healthbar2.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 10)
+	{
+		Healthbar1.LoadImageW("10Health.bmp", CColor::White());
+		Healthbar1.SetImage("10Health.bmp");
+		Healthbar1.SetPosition(100, 530);
+		return;
+	}
+
+	if (health == 0)
+	{
+		Healthbar0.LoadImageW("0Health.bmp", CColor::White());
+		Healthbar0.SetImage("0Health.bmp");
+		Healthbar0.SetPosition(100, 530);
+		return;
+	}
+
+	Healthbar0.IsDeleted();
+	Healthbar1.IsDeleted();
+	Healthbar2.IsDeleted();
+	Healthbar3.IsDeleted();
+	Healthbar4.IsDeleted();
+	Healthbar5.IsDeleted();
+	Healthbar6.IsDeleted();
+	Healthbar7.IsDeleted();
+	Healthbar8.IsDeleted();
+	Healthbar9.IsDeleted();
+	Healthbar10.IsDeleted();
+
+};
+
 /////////////////////////////////////////////////////
 // Game Life Cycle
 
 // one time initialisation
 void CMyGame::OnInitialize()
 {
+	// Loading and Setting the Health Bar
+	Healthbar5.LoadImageW("HealthBar.bmp", CColor::White());
+	Healthbar5.SetImage("HealthBar.bmp");
+
 	m_player.LoadImage("player.png", "stand_right", 11, 6, 0, 0, CColor::White());
 	m_player.LoadImage("player.png", "stand_left", 11, 6, 0, 1, CColor::White());
 	m_player.AddImage("player.png", "run_right", 11, 6, 0, 0, 10, 0, CColor::White());
