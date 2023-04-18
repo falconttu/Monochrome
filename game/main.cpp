@@ -6,7 +6,7 @@ CGameApp app;
 
 int main(int argc, char* argv[])
 {
-	app.OpenWindow(800, 600, "Wall Climber");
+	app.OpenWindow(800, 600, "MONOCHROME");
 	//app.OpenConsole();
 	//app.OpenFullScreen(800, 600, 24);
 	app.SetClearColor(CColor::Black());
