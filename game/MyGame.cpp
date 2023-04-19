@@ -40,36 +40,6 @@ void CMyGame::OnUpdate()
 
 	PlayerController();
 
-	// Jumping
-	if ((IsKeyDown(SDLK_w) || IsKeyDown(SDLK_UP)) && (m_state == STANDING || m_state == RUNNING))
-	{
-		m_player.Accelerate(0, 800);
-		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
-		{
-			if (m_state == AIRBORNE)
-			{
-				m_player.Accelerate(150, 0);
-			}
-			else
-			{
-				m_player.Accelerate(-220, 0);
-			}
-		}
-		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
-		{
-			if (m_state == AIRBORNE)
-			{
-				m_player.Accelerate(-150, 0);
-			}
-			else
-			{
-				m_player.Accelerate(220, 0);
-			}
-		}
-		m_state = AIRBORNE;
-		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
-	}
-
 	// Pre-Update Position
 	CVector v0 = m_player.GetPos();
 
@@ -195,7 +165,9 @@ void CMyGame::OnUpdate()
 
 	//Changing enemey direction
 	for (CSprite* pEnemy : m_sprites)
+	{
 		if ((string)pEnemy->GetProperty("tag") == "enemy")
+		{
 			for (CSprite* pCollider : m_sprites)
 			{
 				if ((string)pCollider->GetProperty("tag") == "lcollider" && pEnemy->HitTest(pCollider, 0))
@@ -204,14 +176,15 @@ void CMyGame::OnUpdate()
 					pEnemy->SetVelocity(100, 0);
 					pEnemy->SetOmega(3.82 * 100);
 				}
-				else
-					if ((string)pCollider->GetProperty("tag") == "rcollider" && pEnemy->HitTest(pCollider, 0))
-					{
-						// Collision response code – right collider
-						pEnemy->SetVelocity(-100, 0);
-						pEnemy->SetOmega(-3.82 * 100);
-					}
+				else if ((string)pCollider->GetProperty("tag") == "rcollider" && pEnemy->HitTest(pCollider, 0))
+				{
+					// Collision response code – right collider
+					pEnemy->SetVelocity(-100, 0);
+					pEnemy->SetOmega(-3.82 * 100);
+				}
 			}
+		}
+	}
 }
 
 void CMyGame::PlayerController()
@@ -243,52 +216,35 @@ void CMyGame::PlayerController()
 			m_state = STANDING;
 		}
 	}
-}
 
-void CMyGame::OnDraw(CGraphics* g)
-{
-	for (CSprite* pSprite : m_sprites)
+	// Jumping
+	if ((IsKeyDown(SDLK_w) || IsKeyDown(SDLK_UP)) && (m_state == STANDING || m_state == RUNNING))
 	{
-		if ((string)pSprite->GetProperty("tag") != "rcollider" && (string)pSprite->GetProperty("tag") != "lcollider")
+		m_player.Accelerate(0, 800);
+		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
 		{
-			pSprite->Draw(g);
+			if (m_state == AIRBORNE)
+			{
+				m_player.Accelerate(150, 0);
+			}
+			else
+			{
+				m_player.Accelerate(-220, 0);
+			}
 		}
-	}
-	m_player.Draw(g);
-
-
-	// Drawing The Health Bars
-
-	if (health == 100) Healthbar10.Draw(g);
-	if (health == 90) Healthbar9.Draw(g);
-	if (health == 80) Healthbar8.Draw(g);
-	if (health == 70) Healthbar7.Draw(g);
-	if (health == 60) Healthbar6.Draw(g);
-	if (health == 50) Healthbar5.Draw(g);
-	if (health == 40) Healthbar4.Draw(g);
-	if (health == 30) Healthbar3.Draw(g);
-	if (health == 20) Healthbar2.Draw(g);
-	if (health == 10) Healthbar1.Draw(g);
-	if (health == 0) Healthbar0.Draw(g);
-
-	//Game over texts
-	if (IsGameOverMode())
-	{
-		if (gamewon)
+		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
 		{
-			*g << font(46) << color(CColor::LightGreen()) << vcenter << center << " GAME WON ";
+			if (m_state == AIRBORNE)
+			{
+				m_player.Accelerate(-150, 0);
+			}
+			else
+			{
+				m_player.Accelerate(220, 0);
+			}
 		}
-		else
-		{
-			*g << font(46) << color(CColor::LightRed()) << vcenter << center << " GAME OVER ";
-		}
-	}
-
-	//Keys collected counter
-	if (!IsGameOverMode())
-	{
-		*g << font(24) << color(CColor::White()) << xy(5, 580) << "Keys Collected:";
-		*g << font(24) << color(CColor::LightBlue()) << xy(175, 580) << keys_collected;
+		m_state = AIRBORNE;
+		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
 }
 
@@ -397,7 +353,56 @@ void CMyGame::HealthBarControl()
 	Healthbar9.IsDeleted();
 	Healthbar10.IsDeleted();
 
-};
+}
+
+void CMyGame::OnDraw(CGraphics* g)
+{
+	for (CSprite* pSprite : m_sprites)
+	{
+		if ((string)pSprite->GetProperty("tag") != "rcollider" && (string)pSprite->GetProperty("tag") != "lcollider")
+		{
+			pSprite->Draw(g);
+		}
+	}
+	m_player.Draw(g);
+
+
+	// Drawing The Health Bars
+
+	if (health == 100) Healthbar10.Draw(g);
+	if (health == 90) Healthbar9.Draw(g);
+	if (health == 80) Healthbar8.Draw(g);
+	if (health == 70) Healthbar7.Draw(g);
+	if (health == 60) Healthbar6.Draw(g);
+	if (health == 50) Healthbar5.Draw(g);
+	if (health == 40) Healthbar4.Draw(g);
+	if (health == 30) Healthbar3.Draw(g);
+	if (health == 20) Healthbar2.Draw(g);
+	if (health == 10) Healthbar1.Draw(g);
+	if (health == 0) Healthbar0.Draw(g);
+
+	//Game over texts
+	if (IsGameOverMode())
+	{
+		if (gamewon)
+		{
+			*g << font(46) << color(CColor::LightGreen()) << vcenter << center << " GAME WON ";
+		}
+		else
+		{
+			*g << font(46) << color(CColor::LightRed()) << vcenter << center << " GAME OVER ";
+		}
+	}
+
+	//Keys collected counter
+	if (!IsGameOverMode())
+	{
+		*g << font(24) << color(CColor::White()) << xy(5, 580) << "Keys Collected:";
+		*g << font(24) << color(CColor::LightBlue()) << xy(175, 580) << keys_collected;
+	}
+}
+
+
 
 /////////////////////////////////////////////////////
 // Game Life Cycle
