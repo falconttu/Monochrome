@@ -6,7 +6,7 @@ CMyGame::CMyGame(void) :
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
-	
+
 }
 
 CMyGame::~CMyGame(void)
@@ -20,7 +20,8 @@ CMyGame::~CMyGame(void)
 void CMyGame::OnUpdate()
 {
 	Uint32 t = GetTime();
-	
+
+	//Healthbar
 	Healthbar0.Update(t);
 	Healthbar1.Update(t);
 	Healthbar2.Update(t);
@@ -37,33 +38,7 @@ void CMyGame::OnUpdate()
 	if (m_state == AIRBORNE)
 		m_player.Accelerate(0, -50);
 
-	// Run and Stand
-	if (m_state == STANDING || m_state == RUNNING)
-	{
-		m_player.SetVelocity(0, 0);
-		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
-		{
-			m_player.Accelerate(-300, 0);
-			if (m_state != RUNNING || m_side != LEFT)
-				m_player.SetAnimation("run_left");
-			m_state = RUNNING;
-			m_side = LEFT;
-		}
-		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
-		{
-			m_player.Accelerate(300, 0);
-			if (m_state != RUNNING || m_side != RIGHT)
-				m_player.SetAnimation("run_right");
-			m_state = RUNNING;
-			m_side = RIGHT;
-		}
-		else
-		{
-			if (m_state == RUNNING)
-				m_player.SetImage(m_side == LEFT ? "stand_left" : "stand_right");
-			m_state = STANDING;
-		}
-	}
+	PlayerController();
 
 	// Jumping
 	if ((IsKeyDown(SDLK_w) || IsKeyDown(SDLK_UP)) && (m_state == STANDING || m_state == RUNNING))
@@ -237,6 +212,37 @@ void CMyGame::OnUpdate()
 						pEnemy->SetOmega(-3.82 * 100);
 					}
 			}
+}
+
+void CMyGame::PlayerController()
+{
+	// Run and Stand
+	if (m_state == STANDING || m_state == RUNNING)
+	{
+		m_player.SetVelocity(0, 0);
+		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
+		{
+			m_player.Accelerate(-300, 0);
+			if (m_state != RUNNING || m_side != LEFT)
+				m_player.SetAnimation("run_left");
+			m_state = RUNNING;
+			m_side = LEFT;
+		}
+		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
+		{
+			m_player.Accelerate(300, 0);
+			if (m_state != RUNNING || m_side != RIGHT)
+				m_player.SetAnimation("run_right");
+			m_state = RUNNING;
+			m_side = RIGHT;
+		}
+		else
+		{
+			if (m_state == RUNNING)
+				m_player.SetImage(m_side == LEFT ? "stand_left" : "stand_right");
+			m_state = STANDING;
+		}
+	}
 }
 
 void CMyGame::OnDraw(CGraphics* g)

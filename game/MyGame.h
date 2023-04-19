@@ -32,6 +32,8 @@ public:
 	int keys_collected;
 	int health;
 
+	virtual void PlayerController();
+
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();
 	virtual void OnDraw(CGraphics* g);
