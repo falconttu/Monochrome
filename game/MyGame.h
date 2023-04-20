@@ -4,8 +4,10 @@ class CMyGame : public CGame
 {
 	// Define sprites and other instance variables here
 
-	CSprite m_player;		// Player sprite
-	CSpriteList m_sprites;	// All other sprites
+	CSprite player;		// Player sprite
+	CSprite background;	// Background sprite
+	CSpriteList platforms;	// List of platforms
+
 
 	// Health Bar Sprites
 	CSprite Healthbar10; // Max HP
