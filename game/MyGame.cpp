@@ -42,7 +42,7 @@ void CMyGame::OnUpdate()
 	PlayerController();
 
 	// Pre-Update Position
-	
+	CVector v0 = player.GetPos();
 
 	// Updates
 	background.Update(t);
@@ -51,8 +51,8 @@ void CMyGame::OnUpdate()
 		platform->Update(t);
 	}
 	player.Update(t);
-	CVector v0 = player.GetPos();
-	
+
+
 	HealthBarControl();
 
 	// Collisions
@@ -67,9 +67,10 @@ void CMyGame::OnUpdate()
 			// platforms and walls
 			if (v0.m_y >= platform->GetTop() + h)	//Player stands on top of the platform
 			{
-				player.SetVelocity(0, platform->GetYVelocity());
-				player.SetY(platform->GetTop() + h);
 				bTouchingPlatform = true;
+				player.SetVelocity(0, 0);
+				player.SetY(platform->GetTop() + h);
+				cout << "hit" << endl;
 			}
 			else if (v0.m_y <= platform->GetBottom() - h)	// Barricades the player from going through
 			{
@@ -92,8 +93,6 @@ void CMyGame::OnUpdate()
 		}
 	}
 	*/
-
-	/*
 	for (CSprite* platform : platforms)
 	{
 		int h = player.GetHeight() / 2 - 1;
@@ -116,14 +115,14 @@ void CMyGame::OnUpdate()
 			float f2 = (tx - vx * f1) / (X + h);
 			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
 			{
-				player.SetVelocity(Reflect(player.GetVelocity() * 0, n));	//reflection physics
+				player.SetVelocity(0, 0);	//reflection physics
+				player.SetY(platform->GetTop() + h);
 				bTouchingPlatform = true;
 			}
 		}
 	}
-	*/
 
-	
+	/*
 	int h = player.GetHeight() / 2 - 1;
 	int w = player.GetWidth() / 2 - 1;
 	for (CSprite* platform : platforms)
@@ -138,6 +137,7 @@ void CMyGame::OnUpdate()
 			}
 		}
 	}
+	*/
 
 	// processing of airborne condition
 	if (m_state == AIRBORNE && bTouchingPlatform)
@@ -151,11 +151,6 @@ void CMyGame::OnUpdate()
 		// just taken off
 		m_state = AIRBORNE;
 		player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
-	}
-
-	for (CSprite* platform : platforms)
-	{
-		platform->SetVelocity(0, 5);
 	}
 }
 
