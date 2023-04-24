@@ -81,7 +81,24 @@ void CMyGame::OnUpdate()
 			}
 		}
 	}
-	
+	for (CSprite* platform : platforms)
+	{
+		int h = ball.GetHeight() / 2 - 1;
+		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+		if (ball.HitTest(platform, 0))
+		{
+			if (ball.GetVelocity().m_x >= platform->GetRight() + h)
+			{
+				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+			}
+			else if (ball.GetVelocity().m_x <= platform->GetLeft() - h)
+			{
+				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+			}
+		}
+	}
+
+
 	// velocity vectors
 	CVector ball_v = ball.GetVelocity();
 	CVector player_v = player.GetVelocity();
