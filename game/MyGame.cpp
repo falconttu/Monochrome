@@ -82,6 +82,22 @@ void CMyGame::OnUpdate()
 		}
 	}
 	
+	// velocity vectors
+	CVector ball_v = ball.GetVelocity();
+	CVector player_v = player.GetVelocity();
+	// relational position
+	CVector rt = player.GetPos() - ball.GetPos();
+	// Directional test
+	if (Dot(player_v - ball_v,rt) < 0)
+	{
+		// normal vector
+		CVector nor = Normalise(rt);
+		// velocity calculation
+		CVector u = Dot(ball_v-player_v,nor) * nor;
+		ball.Accelerate(-u);
+		player.Accelerate(u);
+	}
+
 	
 	// Updates
 	for (CSprite* platform : platforms)
