@@ -7,7 +7,8 @@ class CMyGame : public CGame
 	CSprite player;		// Player sprite
 	CSprite background;	// Background sprite
 	CSpriteList platforms;	// List of platforms
-
+	CSprite MenuLevel1; // Level 1 Menu Sprite
+	CSprite MenuLevel2; // Level 2 Menu Sprite
 
 	// Health Bar Sprites
 	CSprite Healthbar10; // Max HP
@@ -22,6 +23,9 @@ class CMyGame : public CGame
 	CSprite Healthbar1; // 10 HP
 	CSprite Healthbar0; // 0 HP
 
+	// Sounds
+	CSoundPlayer MenuTheme;
+
 	// Player State
 	enum { STANDING, RUNNING, AIRBORNE, CLIMBING } m_state;
 	enum { LEFT, RIGHT } m_side;
@@ -33,6 +37,7 @@ public:
 	bool gamewon;
 	int keys_collected;
 	int health;
+	int MenuGameLV;
 
 	virtual void PlayerController();
 
@@ -48,6 +53,7 @@ public:
 	virtual void OnStartLevel(Sint16 nLevel);
 	virtual void OnGameOver();
 	virtual void OnTerminate();
+	virtual void MenuControl();
 
 	// Keyboard Event Handlers
 	virtual void OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode);

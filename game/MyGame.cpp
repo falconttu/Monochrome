@@ -7,6 +7,8 @@ CMyGame::CMyGame(void) :
 {
 	// TODO: add initialisation here
 
+	// Initialising Integer which will control the Level picked via the game menu
+	MenuGameLV = 1;
 }
 
 CMyGame::~CMyGame(void)
@@ -22,7 +24,12 @@ void CMyGame::OnUpdate()
 	Uint32 t = GetTime();
 	Uint32 dt = GetDeltaTime();
 
-	//Healthbar
+	// Menu 1 and 2 Update
+	MenuLevel1.Update(t);
+	MenuLevel2.Update(t);
+
+
+	// Healthbar
 	Healthbar0.Update(t);
 	Healthbar1.Update(t);
 	Healthbar2.Update(t);
@@ -52,8 +59,11 @@ void CMyGame::OnUpdate()
 	}
 	player.Update(t);
 
-
+	// Updating the HealthBar Control Function
 	HealthBarControl();
+
+	// Updating the Menu Control Function
+	MenuControl();
 
 	// Collisions
 	bool bTouchingPlatform = false;
@@ -322,6 +332,39 @@ void CMyGame::HealthBarControl()
 
 }
 
+void CMyGame::MenuControl()
+{
+	if (IsKeyDown(SDLK_UP) || IsKeyDown(SDLK_w))
+	{
+		MenuGameLV = 1;
+	}
+
+	if (IsKeyDown(SDLK_DOWN) || IsKeyDown(SDLK_s))
+	{
+		MenuGameLV = 2;
+	}
+
+	if (MenuGameLV == 1)
+	{
+		MenuLevel1.LoadImage("MonochromeMenuLV1.bmp");
+		MenuLevel1.SetImage("MonochromeMenuLV1.bmp");
+		MenuLevel1.SetPosition(400, 300);
+	}
+	
+    if (MenuGameLV == 2)
+	{
+		MenuLevel2.LoadImage("MonochromeMenuLV2.bmp");
+		MenuLevel2.SetImage("MonochromeMenuLV2.bmp");
+		MenuLevel2.SetPosition(400, 300);
+	}
+
+	MenuLevel1.IsDeleted();
+	MenuLevel2.IsDeleted();
+	// Entering the Game if on level 1
+
+	
+}
+
 void CMyGame::OnDraw(CGraphics* g)
 {
 	// Drawing The Background
@@ -332,6 +375,18 @@ void CMyGame::OnDraw(CGraphics* g)
 	}
 	player.Draw(g);
 
+	// Drawing the Menu Level 1
+	if (IsMenuMode() && MenuGameLV == 1)
+	{
+		MenuLevel1.Draw(g);
+		return;
+	}
+
+	if (IsMenuMode() && MenuGameLV == 2)
+	{
+		MenuLevel2.Draw(g);
+		return;
+	}
 
 	// Drawing The Health Bars
 
@@ -391,14 +446,25 @@ void CMyGame::OnInitialize()
 	player.LoadImage("player.png", "hang", 11, 6, 10, 2, CColor::White());
 	player.AddImage("player.png", "climb", 11, 6, 9, 2, 10, 2, CColor::White());
 
-
+	
 }
 
 // called when a new game is requested (e.g. when F2 pressed)
 // use this function to prepare a menu or a welcome screen
 void CMyGame::OnDisplayMenu()
 {
-	StartGame();	// exits the menu mode and starts the game mode
+	MenuControl();	// exits the menu mode and starts the game mode
+
+	// Menu Music
+	if (IsMenuMode())
+	{
+		MenuTheme.Play("BGM.wav", -1);
+	}
+
+	else
+	{
+		MenuTheme.Pause();
+	}
 }
 
 // called when a new game is started
@@ -460,10 +526,18 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 {
 	if (sym == SDLK_F4 && (mod & (KMOD_LALT | KMOD_RALT)))
 		StopGame();
-	if (sym == SDLK_SPACE)
-		PauseGame();
+	// Pause Game
 	if (sym == SDLK_F2)
 		NewGame();
+
+	// Menu Level Selection
+	if (IsMenuMode())
+	{
+		if (IsKeyDown(SDLK_SPACE))
+		{
+			StartGame();
+		}
+	}
 }
 
 void CMyGame::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
