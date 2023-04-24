@@ -51,13 +51,7 @@ void CMyGame::OnUpdate()
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
 
-	// Updates
-	background.Update(t);
-	for (CSprite* platform : platforms)
-	{
-		platform->Update(t);
-	}
-	player.Update(t);
+	
 
 	// Updating the HealthBar Control Function
 	HealthBarControl();
@@ -103,6 +97,7 @@ void CMyGame::OnUpdate()
 		}
 	}
 	*/
+	
 	for (CSprite* platform : platforms)
 	{
 		int h = player.GetHeight() / 2 - 1;
@@ -125,13 +120,13 @@ void CMyGame::OnUpdate()
 			float f2 = (tx - vx * f1) / (X + h);
 			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
 			{
+				bTouchingPlatform = true;
 				player.SetVelocity(0, 0);	//reflection physics
 				player.SetY(platform->GetTop() + h);
-				bTouchingPlatform = true;
 			}
 		}
 	}
-
+	
 	/*
 	int h = player.GetHeight() / 2 - 1;
 	int w = player.GetWidth() / 2 - 1;
@@ -148,6 +143,15 @@ void CMyGame::OnUpdate()
 		}
 	}
 	*/
+
+	// Updates
+	background.Update(t);
+	for (CSprite* platform : platforms)
+	{
+		platform->Update(t);
+	}
+	player.Update(t);
+
 
 	// processing of airborne condition
 	if (m_state == AIRBORNE && bTouchingPlatform)
