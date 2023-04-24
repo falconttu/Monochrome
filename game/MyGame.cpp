@@ -476,8 +476,9 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		player.SetImage("stand_right");
 
 		// platforms
-		platforms.push_back(new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime()));
-
+		platforms.push_back(new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime())); // Floor
+		platforms.push_back(new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Left Wall
+		platforms.push_back(new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Right Wall
 
 		break;
 
