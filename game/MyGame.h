@@ -7,8 +7,11 @@ class CMyGame : public CGame
 	CSprite player;		// Player sprite
 	CSprite background;	// Background sprite
 	CSpriteList platforms;	// List of platforms
+	CSpriteOval ball;
 	CSprite MenuLevel1; // Level 1 Menu Sprite
 	CSprite MenuLevel2; // Level 2 Menu Sprite
+
+	bool back_colour;
 
 	// Health Bar Sprites
 	CSprite Healthbar10; // Max HP
@@ -29,7 +32,6 @@ class CMyGame : public CGame
 	// Player State
 	enum { STANDING, RUNNING, AIRBORNE, CLIMBING } m_state;
 	enum { LEFT, RIGHT } m_side;
-
 public:
 	CMyGame(void);
 	~CMyGame(void);
@@ -40,6 +42,7 @@ public:
 	int MenuGameLV;
 
 	virtual void PlayerController();
+	virtual void BackgroundControl();
 
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();

@@ -2,7 +2,7 @@
 #include "MyGame.h"
 
 CMyGame::CMyGame(void) :
-	player(400, 540, 0, 0, 0)
+	background(400, 300, 0, 0, 0), player(400, 540, 0, 0, 0), ball(20, 20, 16, 16, CColor::White(), 0)
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
@@ -44,7 +44,10 @@ void CMyGame::OnUpdate()
 
 	// Gravity
 	if (m_state == AIRBORNE)
+	{
 		player.Accelerate(0, -50);
+	}
+	ball.Accelerate(0, -5);
 
 	PlayerController();
 
@@ -52,12 +55,11 @@ void CMyGame::OnUpdate()
 	CVector v0 = player.GetPos();
 	
 	// Collisions for physically baseed objects
-	/*
 	for (CSprite* platform : platforms)
 	{
-		int h = player.GetHeight() / 2 - 1;
-		CVector v = player.GetVelocity() * dt / 1000;
-		CVector dist = platform->GetCenter() - player.GetPos();
+		int h = ball.GetHeight() / 2 - 1;
+		CVector v = ball.GetVelocity() * dt / 1000;
+		CVector dist = platform->GetCenter() - ball.GetPos();
 		float X = (platform->GetWidth() / 2);
 		float Y = (platform->GetHeight() / 2);
 		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
@@ -75,20 +77,19 @@ void CMyGame::OnUpdate()
 			float f2 = (tx - vx * f1) / (X + h);
 			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
 			{
-				bTouchingPlatform = true;
-				player.SetVelocity(0, 0);	//reflection physics
-				player.SetY(platform->GetTop() + h);
+				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
 			}
 		}
 	}
-	*/
+	
+	
 	// Updates
-	background.Update(t);
 	for (CSprite* platform : platforms)
 	{
 		platform->Update(t);
 	}
 	player.Update(t);
+	ball.Update(t);
 
 	// Updating the HealthBar Control Function
 	HealthBarControl();
@@ -110,7 +111,6 @@ void CMyGame::OnUpdate()
 				bTouchingPlatform = true;
 				player.SetVelocity(0, 0);
 				player.SetY(platform->GetTop() + h);
-				cout << "hit" << endl;
 			}
 			else if (v0.m_y <= platform->GetBottom() - h)	// Barricades the player from going through
 			{
@@ -132,7 +132,6 @@ void CMyGame::OnUpdate()
 			}
 		}
 	}
-
 
 	// processing of airborne condition
 	if (m_state == AIRBORNE && bTouchingPlatform)
@@ -350,14 +349,31 @@ void CMyGame::MenuControl()
 	
 }
 
+void CMyGame::BackgroundControl()
+{
+	//Changing background colour
+	if (IsKeyDown(SDLK_1))
+	{
+		background.SetImage("black_back.png");
+		back_colour = false;
+		cout << "Black" << endl;
+	}
+	if (IsKeyDown(SDLK_2))
+	{
+		background.SetImage("white_back.png");
+		back_colour = true;
+		cout << "White" << endl;
+	}
+}
+
 void CMyGame::OnDraw(CGraphics* g)
 {
 	// Drawing The Background
-	background.Draw(g);
 	for (CSprite* p : platforms)
 	{
 		p->Draw(g);
 	}
+	ball.Draw(g);
 	player.Draw(g);
 
 	// Drawing the Menu Level 1
@@ -420,6 +436,9 @@ void CMyGame::OnInitialize()
 	Healthbar5.LoadImageW("HealthBar.bmp", CColor::White());
 	Healthbar5.SetImage("HealthBar.bmp");
 
+	background.LoadImage("black_back.png", CColor::Black());
+	background.LoadImage("white_back.png", CColor::White());
+
 	player.LoadImage("player.png", "stand_right", 11, 6, 0, 0, CColor::White());
 	player.LoadImage("player.png", "stand_left", 11, 6, 0, 1, CColor::White());
 	player.AddImage("player.png", "run_right", 11, 6, 0, 0, 10, 0, CColor::White());
@@ -471,6 +490,10 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	{
 	case 1:// build Level 1 sprites
 
+		// Loading the Background
+		background.SetImage("black_back.png");
+		back_colour = false;
+
 		// spawn the player
 		player.SetPos(20, 205);
 		player.SetImage("stand_right");
@@ -479,6 +502,8 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platforms.push_back(new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime())); // Floor
 		platforms.push_back(new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Left Wall
 		platforms.push_back(new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Right Wall
+
+		ball.SetPosition(400, 300);
 
 		break;
 
