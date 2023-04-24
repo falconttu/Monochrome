@@ -50,8 +50,45 @@ void CMyGame::OnUpdate()
 
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
-
 	
+	// Collisions for physically baseed objects
+	/*
+	for (CSprite* platform : platforms)
+	{
+		int h = player.GetHeight() / 2 - 1;
+		CVector v = player.GetVelocity() * dt / 1000;
+		CVector dist = platform->GetCenter() - player.GetPos();
+		float X = (platform->GetWidth() / 2);
+		float Y = (platform->GetHeight() / 2);
+		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+		if (Dot(v, n) < 0)
+		{
+			// Perpendicular component (oncoming)
+			float vy = Dot(v, n);		// velocity component
+			CVector d = dist + (Y + h) * n;	// distance vector between edges
+			float dy = Dot(d, n);		// perpendicular space between
+			float f1 = dy / vy;
+
+			// Parallel component (breadth control)
+			float vx = Cross(v, n);		// velocity component
+			float tx = Cross(dist, n);		// distance between centres
+			float f2 = (tx - vx * f1) / (X + h);
+			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
+			{
+				bTouchingPlatform = true;
+				player.SetVelocity(0, 0);	//reflection physics
+				player.SetY(platform->GetTop() + h);
+			}
+		}
+	}
+	*/
+	// Updates
+	background.Update(t);
+	for (CSprite* platform : platforms)
+	{
+		platform->Update(t);
+	}
+	player.Update(t);
 
 	// Updating the HealthBar Control Function
 	HealthBarControl();
@@ -59,9 +96,8 @@ void CMyGame::OnUpdate()
 	// Updating the Menu Control Function
 	MenuControl();
 
-	// Collisions
+	// Collisions for player
 	bool bTouchingPlatform = false;
-	/*
 	int h = player.GetHeight() / 2 - 1;
 	int w = player.GetWidth() / 2 - 1;
 	for (CSprite* platform : platforms)
@@ -96,61 +132,6 @@ void CMyGame::OnUpdate()
 			}
 		}
 	}
-	*/
-	
-	for (CSprite* platform : platforms)
-	{
-		int h = player.GetHeight() / 2 - 1;
-		CVector v = player.GetVelocity() * dt / 1000;
-		CVector dist = platform->GetCenter() - player.GetPos();
-		float X = (platform->GetWidth() / 2);
-		float Y = (platform->GetHeight() / 2);
-		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
-		if (Dot(v, n) < 0)
-		{
-			// Perpendicular component (oncoming)
-			float vy = Dot(v, n);		// velocity component
-			CVector d = dist + (Y + h) * n;	// distance vector between edges
-			float dy = Dot(d, n);		// perpendicular space between
-			float f1 = dy / vy;
-
-			// Parallel component (breadth control)
-			float vx = Cross(v, n);		// velocity component
-			float tx = Cross(dist, n);		// distance between centres
-			float f2 = (tx - vx * f1) / (X + h);
-			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
-			{
-				bTouchingPlatform = true;
-				player.SetVelocity(0, 0);	//reflection physics
-				player.SetY(platform->GetTop() + h);
-			}
-		}
-	}
-	
-	/*
-	int h = player.GetHeight() / 2 - 1;
-	int w = player.GetWidth() / 2 - 1;
-	for (CSprite* platform : platforms)
-	{
-		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
-		if (player.HitTest(platform->GetTop(),0))
-		{
-			if (v0.m_y >= platform->GetTop() + h)	//Player stands on top of the platform
-			{
-				player.SetVelocity(Reflect(player.GetVelocity() * 0, n));
-				bTouchingPlatform = true;
-			}
-		}
-	}
-	*/
-
-	// Updates
-	background.Update(t);
-	for (CSprite* platform : platforms)
-	{
-		platform->Update(t);
-	}
-	player.Update(t);
 
 
 	// processing of airborne condition
