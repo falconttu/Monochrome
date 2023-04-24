@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "MyGame.h"
 
+bool isWhite = false;
+
 CMyGame::CMyGame(void) :
-	background(400, 300, 0, 0, 0), player(400, 540, 0, 0, 0), ball(20, 20, 16, 16, CColor::White(), 0)
+	background(400,300,0,0,0), player(400, 540, 0, 0, 0), ball(20, 20, 16, 16, CColor::White(), 0)
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
@@ -30,6 +32,7 @@ void CMyGame::OnUpdate()
 
 
 	// Healthbar
+	// try make this an array :)
 	Healthbar0.Update(t);
 	Healthbar1.Update(t);
 	Healthbar2.Update(t);
@@ -54,7 +57,7 @@ void CMyGame::OnUpdate()
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
 	
-	// Collisions for physically baseed objects
+	// Collisions for physically based objects
 	for (CSprite* platform : platforms)
 	{
 		int h = ball.GetHeight() / 2 - 1;
@@ -98,7 +101,7 @@ void CMyGame::OnUpdate()
 		}
 	}
 
-
+	/*
 	// velocity vectors
 	CVector ball_v = ball.GetVelocity();
 	CVector player_v = player.GetVelocity();
@@ -114,7 +117,7 @@ void CMyGame::OnUpdate()
 		ball.Accelerate(-u);
 		player.Accelerate(u);
 	}
-
+	*/
 	
 	// Updates
 	for (CSprite* platform : platforms)
@@ -163,6 +166,17 @@ void CMyGame::OnUpdate()
 				player.SetX(platform->GetLeft() - w - 2);
 				player.Accelerate(-10, 0);
 			}
+		}
+
+
+		if (isWhite == false) {
+			background.SetImage("black_back.png");
+			back_colour = false;
+		}
+
+		if (isWhite == true) {
+			background.SetImage("white_back.png");
+			back_colour = true;
 		}
 	}
 
@@ -382,26 +396,12 @@ void CMyGame::MenuControl()
 	
 }
 
-void CMyGame::BackgroundControl()
-{
-	//Changing background colour
-	if (IsKeyDown(SDLK_1))
-	{
-		background.SetImage("black_back.png");
-		back_colour = false;
-		cout << "Black" << endl;
-	}
-	if (IsKeyDown(SDLK_2))
-	{
-		background.SetImage("white_back.png");
-		back_colour = true;
-		cout << "White" << endl;
-	}
-}
+
 
 void CMyGame::OnDraw(CGraphics* g)
 {
 	// Drawing The Background
+	background.Draw(g);
 	for (CSprite* p : platforms)
 	{
 		p->Draw(g);
@@ -452,7 +452,7 @@ void CMyGame::OnDraw(CGraphics* g)
 	//Keys collected counter
 	if (!IsGameOverMode())
 	{
-		*g << font(24) << color(CColor::White()) << xy(5, 580) << "Keys Collected:";
+		*g << font(24) << color(CColor::Blue()) << xy(5, 580) << "Keys Collected:";
 		*g << font(24) << color(CColor::LightBlue()) << xy(175, 580) << keys_collected;
 	}
 }
@@ -469,8 +469,8 @@ void CMyGame::OnInitialize()
 	Healthbar5.LoadImageW("HealthBar.bmp", CColor::White());
 	Healthbar5.SetImage("HealthBar.bmp");
 
-	background.LoadImage("black_back.png", CColor::Black());
-	background.LoadImage("white_back.png", CColor::White());
+	background.LoadImage("black_back.png");
+	background.LoadImage("white_back.png");
 
 	player.LoadImage("player.png", "stand_right", 11, 6, 0, 0, CColor::White());
 	player.LoadImage("player.png", "stand_left", 11, 6, 0, 1, CColor::White());
@@ -495,7 +495,8 @@ void CMyGame::OnDisplayMenu()
 	// Menu Music
 	if (IsMenuMode())
 	{
-		MenuTheme.Play("BGM.wav", -1);
+		//MenuTheme.Play("BGM.wav", -1);
+
 	}
 
 	else
@@ -524,8 +525,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	case 1:// build Level 1 sprites
 
 		// Loading the Background
-		background.SetImage("black_back.png");
-		back_colour = false;
+		background.SetImage("white_back.png");
 
 		// spawn the player
 		player.SetPos(20, 205);
@@ -535,6 +535,9 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platforms.push_back(new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime())); // Floor
 		platforms.push_back(new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Left Wall
 		platforms.push_back(new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Right Wall
+
+		platforms.push_back(new CSpriteRect(150, 100, 600, 20, CColor::White(), CColor::White(), GetTime())); 
+
 
 		ball.SetPosition(400, 300);
 
@@ -582,11 +585,24 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 			StartGame();
 		}
 	}
+
+	// color invert
+	if (sym == SDLK_n) {
+		isWhite = true;
+		cout << "isWhite = " << isWhite << endl;
+	}
+
+	if (sym == SDLK_m) {
+		isWhite = false;
+		cout << "isWhite = " << isWhite << endl;
+	}
 }
 
 void CMyGame::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
 {
 }
+
+
 
 
 /////////////////////////////////////////////////////

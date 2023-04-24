@@ -14,6 +14,7 @@ class CMyGame : public CGame
 	bool back_colour;
 
 	// Health Bar Sprites
+	// try as array please :)
 	CSprite Healthbar10; // Max HP
 	CSprite Healthbar9; // 90 HP
 	CSprite Healthbar8; // 80 HP
@@ -41,9 +42,9 @@ public:
 	int health;
 	int MenuGameLV;
 
-	virtual void PlayerController();
-	virtual void BackgroundControl();
+	
 
+	virtual void PlayerController();
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();
 	virtual void OnDraw(CGraphics* g);

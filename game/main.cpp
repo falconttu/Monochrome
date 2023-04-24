@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		std::cout << "MEDM Version: " << medmVersion << "\n";
 		std::cout << "\nMac's Extended Debug mode is enabled.\nThis is NOT the default debug mode, but a modified version.";
 		std::cout << "\n --Mac, 2022";
-		std::cout << "\n\n ===[CONTROLS]===\nNot defined.\n\n";
+		std::cout << "\n\n ===[CONTROLS]===\nN = Bg White\nM = Bg Black\n\n";
 	}
 
 	app.SetClearColor(CColor::Black());
