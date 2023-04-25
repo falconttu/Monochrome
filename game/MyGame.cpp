@@ -60,64 +60,105 @@ void CMyGame::OnUpdate()
 	// Collisions for physically based objects
 	for (CSprite* platform : platforms)
 	{
-		int h = ball.GetHeight() / 2 - 1;
-		CVector v = ball.GetVelocity() * dt / 1000;
-		CVector dist = platform->GetCenter() - ball.GetPos();
-		float X = (platform->GetWidth() / 2);
-		float Y = (platform->GetHeight() / 2);
-		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
-		if (Dot(v, n) < 0)
+		if (!isWhite)
 		{
-			// Perpendicular component (oncoming)
-			float vy = Dot(v, n);		// velocity component
-			CVector d = dist + (Y + h) * n;	// distance vector between edges
-			float dy = Dot(d, n);		// perpendicular space between
-			float f1 = dy / vy;
-
-			// Parallel component (breadth control)
-			float vx = Cross(v, n);		// velocity component
-			float tx = Cross(dist, n);		// distance between centres
-			float f2 = (tx - vx * f1) / (X + h);
-			if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
+			if ((string)platform->GetProperty("tag") == "white")
 			{
-				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+				int h = ball.GetHeight() / 2 - 1;
+				CVector v = ball.GetVelocity() * dt / 1000;
+				CVector dist = platform->GetCenter() - ball.GetPos();
+				float X = (platform->GetWidth() / 2);
+				float Y = (platform->GetHeight() / 2);
+				CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+				if (Dot(v, n) < 0)
+				{
+					// Perpendicular component (oncoming)
+					float vy = Dot(v, n);		// velocity component
+					CVector d = dist + (Y + h) * n;	// distance vector between edges
+					float dy = Dot(d, n);		// perpendicular space between
+					float f1 = dy / vy;
+
+					// Parallel component (breadth control)
+					float vx = Cross(v, n);		// velocity component
+					float tx = Cross(dist, n);		// distance between centres
+					float f2 = (tx - vx * f1) / (X + h);
+					if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
+					{
+						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+					}
+				}
+			}
+		}
+
+		if (isWhite)
+		{
+			if ((string)platform->GetProperty("tag") == "black")
+			{
+				int h = ball.GetHeight() / 2 - 1;
+				CVector v = ball.GetVelocity() * dt / 1000;
+				CVector dist = platform->GetCenter() - ball.GetPos();
+				float X = (platform->GetWidth() / 2);
+				float Y = (platform->GetHeight() / 2);
+				CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+				if (Dot(v, n) < 0)
+				{
+					// Perpendicular component (oncoming)
+					float vy = Dot(v, n);		// velocity component
+					CVector d = dist + (Y + h) * n;	// distance vector between edges
+					float dy = Dot(d, n);		// perpendicular space between
+					float f1 = dy / vy;
+
+					// Parallel component (breadth control)
+					float vx = Cross(v, n);		// velocity component
+					float tx = Cross(dist, n);		// distance between centres
+					float f2 = (tx - vx * f1) / (X + h);
+					if (-f1 >= 0 && -f1 <= 1 && -f2 >= -1 && -f2 <= 1)	//testing
+					{
+						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+					}
+				}
 			}
 		}
 	}
 	for (CSprite* platform : platforms)
 	{
-		int h = ball.GetHeight() / 2 - 1;
-		CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
-		if (ball.HitTest(platform, 0))
+		if (!isWhite)
 		{
-			if (ball.GetVelocity().m_x >= platform->GetRight() + h)
+			if ((string)platform->GetProperty("tag") == "white")
 			{
-				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+				int h = ball.GetHeight() / 2 - 1;
+				CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+				if (ball.HitTest(platform, 0))
+				{
+					if (ball.GetVelocity().m_x >= platform->GetRight() + h)
+					{
+						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+					}
+					else if (ball.GetVelocity().m_x <= platform->GetLeft() - h)
+					{
+						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+					}
+				}
 			}
-			else if (ball.GetVelocity().m_x <= platform->GetLeft() - h)
+		}
+
+		if ((string)platform->GetProperty("tag") == "wall")
+		{
+			int h = ball.GetHeight() / 2 - 1;
+			CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
+			if (ball.HitTest(platform, 0))
 			{
-				ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+				if (ball.GetVelocity().m_x >= platform->GetRight() + h)
+				{
+					ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+				}
+				else if (ball.GetVelocity().m_x <= platform->GetLeft() - h)
+				{
+					ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
+				}
 			}
 		}
 	}
-
-	/*
-	// velocity vectors
-	CVector ball_v = ball.GetVelocity();
-	CVector player_v = player.GetVelocity();
-	// relational position
-	CVector rt = player.GetPos() - ball.GetPos();
-	// Directional test
-	if (Dot(player_v - ball_v,rt) < 0)
-	{
-		// normal vector
-		CVector nor = Normalise(rt);
-		// velocity calculation
-		CVector u = Dot(ball_v-player_v,nor) * nor;
-		ball.Accelerate(-u);
-		player.Accelerate(u);
-	}
-	*/
 	
 	// Updates
 	for (CSprite* platform : platforms)
@@ -141,42 +182,85 @@ void CMyGame::OnUpdate()
 	{
 		if (player.HitTest(platform, 0))
 		{
-			// platforms and walls
-			if (v0.m_y >= platform->GetTop() + h)	//Player stands on top of the platform
+			if ((string)platform->GetProperty("tag") == "wall")
 			{
-				bTouchingPlatform = true;
-				player.SetVelocity(0, 0);
-				player.SetY(platform->GetTop() + h);
+				if (v0.m_x >= platform->GetRight() + w)
+				{
+					bTouchingPlatform = true;
+					player.SetX(platform->GetRight() + w + 2);
+					player.Accelerate(10, 0);
+				}
+				else if (v0.m_x <= platform->GetLeft() - w)
+				{
+					bTouchingPlatform = true;
+					player.SetX(platform->GetLeft() - w - 2);
+					player.Accelerate(-10, 0);
+				}
 			}
-			else if (v0.m_y <= platform->GetBottom() - h)	// Barricades the player from going through
+			
+			if (isWhite)
 			{
-				bTouchingPlatform = true;
-				player.SetY(platform->GetBottom() - h - 2);
-				player.Accelerate(10, 0);
+				if ((string)platform->GetProperty("tag") == "black")
+				{
+					// platforms and walls
+					if (v0.m_y >= platform->GetTop() + h)	//Player stands on top of the platform
+					{
+						bTouchingPlatform = true;
+						player.SetVelocity(0, 0);
+						player.SetY(platform->GetTop() + h);
+					}
+					else if (v0.m_y <= platform->GetBottom() - h)	// Barricades the player from going through
+					{
+						bTouchingPlatform = true;
+						player.SetY(platform->GetBottom() - h - 2);
+						player.Accelerate(10, 0);
+					}
+					else if (v0.m_x >= platform->GetRight() + w)
+					{
+						bTouchingPlatform = true;
+						player.SetX(platform->GetRight() + w + 2);
+						player.Accelerate(10, 0);
+					}
+					else if (v0.m_x <= platform->GetLeft() - w)
+					{
+						bTouchingPlatform = true;
+						player.SetX(platform->GetLeft() - w - 2);
+						player.Accelerate(-10, 0);
+					}
+				}
 			}
-			else if (v0.m_x >= platform->GetRight() + w)
-			{
-				bTouchingPlatform = true;
-				player.SetX(platform->GetRight() + w + 2);
-				player.Accelerate(10, 0);
-			}
-			else if (v0.m_x <= platform->GetLeft() - w)
-			{
-				bTouchingPlatform = true;
-				player.SetX(platform->GetLeft() - w - 2);
-				player.Accelerate(-10, 0);
-			}
-		}
 
-
-		if (isWhite == false) {
-			background.SetImage("black_back.png");
-			back_colour = false;
-		}
-
-		if (isWhite == true) {
-			background.SetImage("white_back.png");
-			back_colour = true;
+			if (!isWhite)
+			{
+				if ((string)platform->GetProperty("tag") == "white")
+				{
+					// platforms and walls
+					if (v0.m_y >= platform->GetTop() + h)	//Player stands on top of the platform
+					{
+						bTouchingPlatform = true;
+						player.SetVelocity(0, 0);
+						player.SetY(platform->GetTop() + h);
+					}
+					else if (v0.m_y <= platform->GetBottom() - h)	// Barricades the player from going through
+					{
+						bTouchingPlatform = true;
+						player.SetY(platform->GetBottom() - h - 2);
+						player.Accelerate(10, 0);
+					}
+					else if (v0.m_x >= platform->GetRight() + w)
+					{
+						bTouchingPlatform = true;
+						player.SetX(platform->GetRight() + w + 2);
+						player.Accelerate(10, 0);
+					}
+					else if (v0.m_x <= platform->GetLeft() - w)
+					{
+						bTouchingPlatform = true;
+						player.SetX(platform->GetLeft() - w - 2);
+						player.Accelerate(-10, 0);
+					}
+				}
+			}
 		}
 	}
 
@@ -192,6 +276,19 @@ void CMyGame::OnUpdate()
 		// just taken off
 		m_state = AIRBORNE;
 		player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
+	}
+
+	// Procssing background
+	if (isWhite == false) {
+		background.SetImage("black_back.png");
+		back_colour = false;
+		ball.SetColorKey(CColor::White());
+	}
+
+	if (isWhite == true) {
+		background.SetImage("white_back.png");
+		back_colour = true;
+		ball.SetColorKey(CColor::Black());
 	}
 }
 
@@ -396,8 +493,6 @@ void CMyGame::MenuControl()
 	
 }
 
-
-
 void CMyGame::OnDraw(CGraphics* g)
 {
 	// Drawing The Background
@@ -406,8 +501,8 @@ void CMyGame::OnDraw(CGraphics* g)
 	{
 		p->Draw(g);
 	}
-	ball.Draw(g);
 	player.Draw(g);
+	ball.Draw(g);
 
 	// Drawing the Menu Level 1
 	if (IsMenuMode() && MenuGameLV == 1)
@@ -456,8 +551,6 @@ void CMyGame::OnDraw(CGraphics* g)
 		*g << font(24) << color(CColor::LightBlue()) << xy(175, 580) << keys_collected;
 	}
 }
-
-
 
 /////////////////////////////////////////////////////
 // Game Life Cycle
@@ -508,15 +601,18 @@ void CMyGame::OnDisplayMenu()
 // called when a new game is started
 // as a second phase after a menu or a welcome screen
 void CMyGame::OnStartGame()
-{
-}
+{}
+
+CSprite* platform;
 
 // called when a new level started - first call for nLevel = 1
 void CMyGame::OnStartLevel(Sint16 nLevel)
 {
 	// Clean up first
 	for (CSprite* platforms : platforms)
+	{
 		delete platforms;
+	}
 	platforms.clear();
 	platforms.delete_all();
 
@@ -532,11 +628,21 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		player.SetImage("stand_right");
 
 		// platforms
-		platforms.push_back(new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime())); // Floor
-		platforms.push_back(new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Left Wall
-		platforms.push_back(new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime())); // Right Wall
+		platform = new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime());	// Floor
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
+		
+		platform = new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Left Wall
+		platform->SetProperty("tag", "wall");
+		platforms.push_back(platform);	
 
-		platforms.push_back(new CSpriteRect(150, 100, 600, 20, CColor::White(), CColor::White(), GetTime())); 
+		platform = new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Right Wall
+		platform->SetProperty("tag", "wall");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(150, 100, 600, 20, CColor::Black(), CColor::Black(), GetTime());
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform); 
 
 
 		ball.SetPosition(400, 300);
@@ -558,13 +664,11 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 
 // called when the game is over
 void CMyGame::OnGameOver()
-{
-}
+{}
 
 // one time termination code
 void CMyGame::OnTerminate()
-{
-}
+{}
 
 /////////////////////////////////////////////////////
 // Keyboard Event Handlers
@@ -599,39 +703,29 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 }
 
 void CMyGame::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
-{
-}
-
-
+{}
 
 
 /////////////////////////////////////////////////////
 // Mouse Events Handlers
 
 void CMyGame::OnMouseMove(Uint16 x, Uint16 y, Sint16 relx, Sint16 rely, bool bLeft, bool bRight, bool bMiddle)
-{
-}
+{}
 
 void CMyGame::OnLButtonDown(Uint16 x, Uint16 y)
-{
-}
+{}
 
 void CMyGame::OnLButtonUp(Uint16 x, Uint16 y)
-{
-}
+{}
 
 void CMyGame::OnRButtonDown(Uint16 x, Uint16 y)
-{
-}
+{}
 
 void CMyGame::OnRButtonUp(Uint16 x, Uint16 y)
-{
-}
+{}
 
 void CMyGame::OnMButtonDown(Uint16 x, Uint16 y)
-{
-}
+{}
 
 void CMyGame::OnMButtonUp(Uint16 x, Uint16 y)
-{
-}
+{}
