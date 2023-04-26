@@ -351,6 +351,18 @@ void CMyGame::PlayerController()
 		m_state = AIRBORNE;
 		player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
+
+	// Player Death
+
+	if (!IsMenuMode())
+	{
+		if (player.GetY() <= -10)
+		{
+			gamewon = false;
+			GameOver();
+		}
+
+	}
 }
 
 void CMyGame::HealthBarControl()
