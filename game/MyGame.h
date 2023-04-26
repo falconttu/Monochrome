@@ -10,6 +10,7 @@ class CMyGame : public CGame
 	CSpriteOval ball;
 	CSprite MenuLevel1; // Level 1 Menu Sprite
 	CSprite MenuLevel2; // Level 2 Menu Sprite
+	CSpriteList colliders;
 
 	bool back_colour;
 
@@ -45,6 +46,8 @@ public:
 	
 
 	virtual void PlayerController();
+	virtual void JumpHereController();
+
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();
 	virtual void OnDraw(CGraphics* g);

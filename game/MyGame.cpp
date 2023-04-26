@@ -11,6 +11,7 @@ CMyGame::CMyGame(void) :
 
 	// Initialising Integer which will control the Level picked via the game menu
 	MenuGameLV = 1;
+	jumperecount = 1
 }
 
 CMyGame::~CMyGame(void)
@@ -52,7 +53,10 @@ void CMyGame::OnUpdate()
 	}
 	ball.Accelerate(0, -5);
 
+	// Player controller
 	PlayerController();
+
+	JumpHereController();
 
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
@@ -167,7 +171,11 @@ void CMyGame::OnUpdate()
 	}
 	player.Update(t);
 	ball.Update(t);
-
+	for (CSprite* collider : colliders)
+	{
+		collider->Update(t);
+	}
+	
 	// Updating the HealthBar Control Function
 	HealthBarControl();
 
@@ -284,7 +292,6 @@ void CMyGame::OnUpdate()
 		back_colour = false;
 		ball.SetColorKey(CColor::White());
 	}
-
 	if (isWhite == true) {
 		background.SetImage("white_back.png");
 		back_colour = true;
@@ -364,6 +371,51 @@ void CMyGame::PlayerController()
 		}
 
 	}
+}
+
+void CMyGame::JumpHereController()
+{
+	for (CSprite* collider : colliders)
+	{
+		//Collisions
+		if (player.HitTest(collider, 0))
+		{
+			if ((string)collider->GetProperty("tag") == "black_base")
+			{
+				cout << "hit";
+				int h = player.GetHeight() / 2 - 1;
+				if (player.GetPos().m_y >= collider->GetTop() - h)
+				{
+					isWhite = true;
+					cout << "isWhite = " << isWhite << endl;
+					collider->Delete();
+				}
+			}
+			if ((string)collider->GetProperty("tag") == "black_base2")
+			{
+				cout << "hit";
+				int h = player.GetHeight() / 2 - 1;
+				if (player.GetPos().m_y >= collider->GetTop() - h)
+				{
+					isWhite = true;
+					cout << "isWhite = " << isWhite << endl;
+					collider->Delete();
+				}
+			}
+			if ((string)collider->GetProperty("tag") == "white_base1")
+			{
+				cout << "hit";
+				int h = player.GetHeight() / 2 - 1;
+				if (player.GetPos().m_y >= collider->GetTop() - h)
+				{
+					isWhite = false;
+					cout << "isWhite = " << isWhite << endl;
+					collider->Delete();
+				}
+			}
+		}
+	}
+	colliders.delete_if(deleted);
 }
 
 void CMyGame::HealthBarControl()
@@ -514,6 +566,27 @@ void CMyGame::OnDraw(CGraphics* g)
 	{
 		p->Draw(g);
 	}
+	for (CSprite* collider : colliders)
+	{
+		if (!isWhite)
+		{
+			if ((string)collider->GetProperty("tag") == "black_base1")
+			{
+				collider->Draw(g);
+			}
+			if ((string)collider->GetProperty("tag") == "black_base2")
+			{
+				collider->Draw(g);
+			}
+		}
+		if (isWhite)
+		{
+			if ((string)collider->GetProperty("tag") == "white_base1")
+			{
+				collider->Draw(g);
+			}
+		}
+	}
 	player.Draw(g);
 	ball.Draw(g);
 
@@ -597,14 +670,12 @@ void CMyGame::OnInitialize()
 void CMyGame::OnDisplayMenu()
 {
 	MenuControl();	// exits the menu mode and starts the game mode
-
 	// Menu Music
 	if (IsMenuMode())
 	{
 		//MenuTheme.Play("BGM.wav", -1);
 
 	}
-
 	else
 	{
 		MenuTheme.Pause();
@@ -617,6 +688,7 @@ void CMyGame::OnStartGame()
 {}
 
 CSprite* platform;
+CSprite* collider;
 
 // called when a new level started - first call for nLevel = 1
 void CMyGame::OnStartLevel(Sint16 nLevel)
@@ -628,6 +700,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	}
 	platforms.clear();
 	platforms.delete_all();
+	isWhite = false;
 
 	switch (nLevel)
 	{
@@ -653,10 +726,29 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform->SetProperty("tag", "wall");
 		platforms.push_back(platform);
 
-		platform = new CSpriteRect(150, 100, 600, 20, CColor::Black(), CColor::Black(), GetTime());
+		platform = new CSpriteRect(100, 100, 400, 20, CColor::Black(), CColor::Black(), GetTime()); //First Elevation
 		platform->SetProperty("tag", "black");
-		platforms.push_back(platform); 
+		platforms.push_back(platform);
 
+		platform = new CSpriteRect(350, 155, 280, 20, CColor::White(), CColor::White(), GetTime());	//Second Elevation
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(575, 250, 260, 20, CColor::Black(), CColor::Black(), GetTime());
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+		
+		collider = new CSprite(400, 50, 44, 44, "jump_sprite.png", GetTime());
+		collider->SetProperty("tag", "black_base1");
+		colliders.push_back(collider);
+		
+		collider = new CSprite(215, 145, 44, 44, "jump_sprite_invert.png", GetTime());
+		collider->SetProperty("tag", "white_base1");
+		colliders.push_back(collider);
+
+		collider = new CSprite(400, 200, 44, 44, "jump_sprite.png", GetTime());
+		collider->SetProperty("tag", "black_base2");
+		colliders.push_back(collider);
 
 		ball.SetPosition(400, 300);
 
