@@ -759,7 +759,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		background.SetImage("white_back.png");
 
 		// spawn the player
-		player.SetPos(150, 400);
+		player.SetPos(30, 35);
 		player.SetImage("stand_right");
 
 		// platforms
