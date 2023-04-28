@@ -11,6 +11,10 @@ class CMyGame : public CGame
 	CSprite MenuLevel1; // Level 1 Menu Sprite
 	CSprite MenuLevel2; // Level 2 Menu Sprite
 	CSpriteList colliders;
+	CSprite shoot_here;
+	CSprite target;
+	CSprite NextLevel;
+
 
 	bool back_colour;
 
@@ -42,11 +46,18 @@ public:
 	int keys_collected;
 	int health;
 	int MenuGameLV;
-
-	
+	bool shootmode;
+	int spawn_target;
+	bool spawn_stopper;
+	bool aiming;
+	bool shot;
+	bool target_hit;
+	int final_plat;
+	bool spawn_stopper_plat;
 
 	virtual void PlayerController();
 	virtual void JumpHereController();
+	virtual void ShootHereController();
 
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();

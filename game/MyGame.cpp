@@ -4,14 +4,14 @@
 bool isWhite = false;
 
 CMyGame::CMyGame(void) :
-	background(400,300,0,0,0), player(400, 540, 0, 0, 0), ball(20, 20, 16, 16, CColor::White(), 0)
+	background(400,300,0,0,0), player(400, 540, 0, 0, 0), ball(30, 30, 16, 16, CColor::Black(), 0),
+	shoot_here(400, 300, 0, 0, 0),target(400, 300, 0, 0, 0)
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
 
 	// Initialising Integer which will control the Level picked via the game menu
 	MenuGameLV = 1;
-	jumperecount = 1
 }
 
 CMyGame::~CMyGame(void)
@@ -51,12 +51,20 @@ void CMyGame::OnUpdate()
 	{
 		player.Accelerate(0, -50);
 	}
-	ball.Accelerate(0, -5);
+	
+	if (shootmode && shot)
+	{
+		ball.Accelerate(0, -5);
+	}
 
 	// Player controller
 	PlayerController();
 
+	// Jump Here Controller
 	JumpHereController();
+
+	// Shoot Here Controller
+	ShootHereController();
 
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
@@ -126,26 +134,6 @@ void CMyGame::OnUpdate()
 	}
 	for (CSprite* platform : platforms)
 	{
-		if (!isWhite)
-		{
-			if ((string)platform->GetProperty("tag") == "white")
-			{
-				int h = ball.GetHeight() / 2 - 1;
-				CVector n = CVector(sin(platform->GetRotation()), cos(platform->GetRotation()));
-				if (ball.HitTest(platform, 0))
-				{
-					if (ball.GetVelocity().m_x >= platform->GetRight() + h)
-					{
-						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
-					}
-					else if (ball.GetVelocity().m_x <= platform->GetLeft() - h)
-					{
-						ball.SetVelocity(Reflect(ball.GetVelocity() * 0.65, n));
-					}
-				}
-			}
-		}
-
 		if ((string)platform->GetProperty("tag") == "wall")
 		{
 			int h = ball.GetHeight() / 2 - 1;
@@ -175,7 +163,9 @@ void CMyGame::OnUpdate()
 	{
 		collider->Update(t);
 	}
-	
+	shoot_here.Update(t);
+	target.Update(t);
+	if(target_hit){	NextLevel.Update(t); }
 	// Updating the HealthBar Control Function
 	HealthBarControl();
 
@@ -290,12 +280,10 @@ void CMyGame::OnUpdate()
 	if (isWhite == false) {
 		background.SetImage("black_back.png");
 		back_colour = false;
-		ball.SetColorKey(CColor::White());
 	}
 	if (isWhite == true) {
 		background.SetImage("white_back.png");
 		back_colour = true;
-		ball.SetColorKey(CColor::Black());
 	}
 }
 
@@ -369,7 +357,6 @@ void CMyGame::PlayerController()
 			gamewon = false;
 			GameOver();
 		}
-
 	}
 }
 
@@ -391,18 +378,7 @@ void CMyGame::JumpHereController()
 					collider->Delete();
 				}
 			}
-			if ((string)collider->GetProperty("tag") == "black_base2")
-			{
-				cout << "hit";
-				int h = player.GetHeight() / 2 - 1;
-				if (player.GetPos().m_y >= collider->GetTop() - h)
-				{
-					isWhite = true;
-					cout << "isWhite = " << isWhite << endl;
-					collider->Delete();
-				}
-			}
-			if ((string)collider->GetProperty("tag") == "white_base1")
+			if ((string)collider->GetProperty("tag") == "white_base")
 			{
 				cout << "hit";
 				int h = player.GetHeight() / 2 - 1;
@@ -416,6 +392,61 @@ void CMyGame::JumpHereController()
 		}
 	}
 	colliders.delete_if(deleted);
+}
+
+void CMyGame::ShootHereController()
+{
+	if (player.HitTest(&shoot_here))
+	{
+		shootmode = true;
+		spawn_target = 1;
+	}
+
+	if (spawn_target == 1 && !spawn_stopper)
+	{
+		CSprite* platform = new CSpriteRect(80, 390, 70, 20, CColor::Black(), CColor::Black(), GetTime());
+		platform->SetRotation(45);
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+
+		target.SetPosition(95, 405);
+		target.SetRotation(45);
+
+		spawn_target = 2;
+		spawn_stopper = true;
+	}
+
+	if (shootmode)
+	{
+		if ((ball.GetRight() <= 0 || ball.GetLeft() >= GetWidth() || ball.GetTop() <= 0) && !target_hit)
+		{
+			shot = false;
+			aiming = false;
+			ball.SetPos(595, 450);
+			ball.SetPivotFromCenter(0, 0);
+			ball.SetVelocity(0, 0);
+		}
+	}
+
+	if (ball.HitTest(&target))
+	{
+		target_hit = true;
+		cout << "target_hit = " << target_hit << endl;
+		final_plat = 1;
+	}
+
+	if (final_plat == 1 && !spawn_stopper_plat)
+	{
+		CSprite* platform = new CSpriteRect(660, 500, 200, 20, CColor::Black(), CColor::Black(), GetTime());	//Sixth Elevation
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+		
+		NextLevel.SetPosition(710, 545);
+		NextLevel.SetSize(45, 68);
+
+		final_plat = 2;
+		spawn_stopper_plat = true;
+	}
 }
 
 void CMyGame::HealthBarControl()
@@ -570,26 +601,24 @@ void CMyGame::OnDraw(CGraphics* g)
 	{
 		if (!isWhite)
 		{
-			if ((string)collider->GetProperty("tag") == "black_base1")
-			{
-				collider->Draw(g);
-			}
-			if ((string)collider->GetProperty("tag") == "black_base2")
+			if ((string)collider->GetProperty("tag") == "black_base")
 			{
 				collider->Draw(g);
 			}
 		}
 		if (isWhite)
 		{
-			if ((string)collider->GetProperty("tag") == "white_base1")
+			if ((string)collider->GetProperty("tag") == "white_base")
 			{
 				collider->Draw(g);
 			}
 		}
 	}
+	if (isWhite) { shoot_here.Draw(g); if (shootmode) { target.Draw(g); } }
+	if (shootmode) { ball.Draw(g); }
+	if(target_hit){ NextLevel.Draw(g); }
 	player.Draw(g);
-	ball.Draw(g);
-
+	
 	// Drawing the Menu Level 1
 	if (IsMenuMode() && MenuGameLV == 1)
 	{
@@ -651,6 +680,15 @@ void CMyGame::OnInitialize()
 	background.LoadImage("black_back.png");
 	background.LoadImage("white_back.png");
 
+	shoot_here.LoadImage("shoot_here.png");
+	shoot_here.SetImage("shoot_here.png");
+
+	target.LoadImage("target.png",CColor::White());
+	target.SetImage("target.png");
+
+	NextLevel.LoadImage("door.png",CColor::White());
+	NextLevel.SetImage("door.png");
+
 	player.LoadImage("player.png", "stand_right", 11, 6, 0, 0, CColor::White());
 	player.LoadImage("player.png", "stand_left", 11, 6, 0, 1, CColor::White());
 	player.AddImage("player.png", "run_right", 11, 6, 0, 0, 10, 0, CColor::White());
@@ -661,8 +699,6 @@ void CMyGame::OnInitialize()
 	player.LoadImage("player.png", "crouch_left", 11, 6, 2, 5, CColor::White());
 	player.LoadImage("player.png", "hang", 11, 6, 10, 2, CColor::White());
 	player.AddImage("player.png", "climb", 11, 6, 9, 2, 10, 2, CColor::White());
-
-	
 }
 
 // called when a new game is requested (e.g. when F2 pressed)
@@ -701,6 +737,19 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	platforms.clear();
 	platforms.delete_all();
 	isWhite = false;
+	//shootmode set to false
+	shootmode = false;
+	//target
+	spawn_target = 0;
+	spawn_stopper = false;
+	aiming = false;
+	shot = false;
+	target_hit = false;
+
+	//Final platform
+	final_plat = 0;
+	spawn_stopper_plat = false;
+
 
 	switch (nLevel)
 	{
@@ -710,7 +759,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		background.SetImage("white_back.png");
 
 		// spawn the player
-		player.SetPos(20, 205);
+		player.SetPos(150, 400);
 		player.SetImage("stand_right");
 
 		// platforms
@@ -734,23 +783,45 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
 
-		platform = new CSpriteRect(575, 250, 260, 20, CColor::Black(), CColor::Black(), GetTime());
+		platform = new CSpriteRect(590, 250, 260, 20, CColor::Black(), CColor::Black(), GetTime());	//Third Elevation
 		platform->SetProperty("tag", "black");
 		platforms.push_back(platform);
+
+		platform = new CSpriteRect(190, 315, 310, 20, CColor::White(), CColor::White(), GetTime());	//Fourth Elevation
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
 		
+		platform = new CSpriteRect(465, 410, 255, 20, CColor::Black(), CColor::Black(), GetTime());	//Fifth Elevation
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+
 		collider = new CSprite(400, 50, 44, 44, "jump_sprite.png", GetTime());
-		collider->SetProperty("tag", "black_base1");
+		collider->SetProperty("tag", "black_base");
 		colliders.push_back(collider);
 		
-		collider = new CSprite(215, 145, 44, 44, "jump_sprite_invert.png", GetTime());
-		collider->SetProperty("tag", "white_base1");
+		collider = new CSprite(170, 135, 44, 44, "jump_sprite_invert.png", GetTime());
+		collider->SetProperty("tag", "white_base");
 		colliders.push_back(collider);
 
-		collider = new CSprite(400, 200, 44, 44, "jump_sprite.png", GetTime());
-		collider->SetProperty("tag", "black_base2");
+		collider = new CSprite(430, 190, 44, 44, "jump_sprite.png", GetTime());
+		collider->SetProperty("tag", "black_base");
 		colliders.push_back(collider);
 
-		ball.SetPosition(400, 300);
+		collider = new CSprite(550, 290, 44, 44, "jump_sprite_invert.png", GetTime());
+		collider->SetProperty("tag", "white_base");
+		colliders.push_back(collider);
+
+		collider = new CSprite(300, 350, 44, 44, "jump_sprite.png", GetTime());
+		collider->SetProperty("tag", "black_base");
+		colliders.push_back(collider);
+
+		shoot_here.SetPosition(480, 455);
+		shoot_here.SetSize(44, 44);
+
+		ball.SetPos(595, 450);
+		ball.SetPivotFromCenter(0, 0);
+		ball.SetVelocity(0, 0);
+		aiming = false;
 
 		break;
 
@@ -810,18 +881,39 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 void CMyGame::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
 {}
 
-
 /////////////////////////////////////////////////////
 // Mouse Events Handlers
 
 void CMyGame::OnMouseMove(Uint16 x, Uint16 y, Sint16 relx, Sint16 rely, bool bLeft, bool bRight, bool bMiddle)
-{}
+{
+	if (aiming)
+	{
+		ball.SetPosition(x, y);
+	}
+}
 
 void CMyGame::OnLButtonDown(Uint16 x, Uint16 y)
-{}
+{
+	if (ball.HitTest(x, y))
+	{
+		aiming = true;
+		ball.SetPivot(x, y);
+	}
+}
 
 void CMyGame::OnLButtonUp(Uint16 x, Uint16 y)
-{}
+{
+	if (aiming)
+	{
+		ball.SetPosition(x, y);
+		aiming = false;
+
+		double fx = 595 - x;
+		double fy = 450 - y;
+		ball.SetVelocity(8.5 * fx, 8.5 * fy);
+		shot = true;
+	}
+}
 
 void CMyGame::OnRButtonDown(Uint16 x, Uint16 y)
 {}
