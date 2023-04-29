@@ -4,8 +4,8 @@
 bool isWhite = false;
 
 CMyGame::CMyGame(void) :
-	background(400,300,0,0,0), player(400, 540, 0, 0, 0), ball(30, 30, 16, 16, CColor::Black(), 0),
-	shoot_here(400, 300, 0, 0, 0),target(400, 300, 0, 0, 0)
+	background(400, 300, 0, 0, 0), player(400, 540, 0, 0, 0), ball(30, 30, 16, 16, CColor::Black(), 0),
+	shoot_here(400, 300, 0, 0, 0), target(400, 300, 0, 0, 0)
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
@@ -51,7 +51,7 @@ void CMyGame::OnUpdate()
 	{
 		player.Accelerate(0, -50);
 	}
-	
+
 	if (shootmode && shot)
 	{
 		ball.Accelerate(0, -5);
@@ -68,7 +68,7 @@ void CMyGame::OnUpdate()
 
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
-	
+
 	// Collisions for physically based objects
 	for (CSprite* platform : platforms)
 	{
@@ -151,7 +151,7 @@ void CMyGame::OnUpdate()
 			}
 		}
 	}
-	
+
 	// Updates
 	for (CSprite* platform : platforms)
 	{
@@ -165,7 +165,7 @@ void CMyGame::OnUpdate()
 	}
 	shoot_here.Update(t);
 	target.Update(t);
-	if(target_hit){	NextLevel.Update(t); }
+	if (target_hit) { NextLevel.Update(t); }
 	// Updating the HealthBar Control Function
 	HealthBarControl();
 
@@ -195,7 +195,7 @@ void CMyGame::OnUpdate()
 					player.Accelerate(-10, 0);
 				}
 			}
-			
+
 			if (isWhite)
 			{
 				if ((string)platform->GetProperty("tag") == "black")
@@ -352,7 +352,7 @@ void CMyGame::PlayerController()
 	//fall
 	if (!IsMenuMode())
 	{
-		if (player.GetY() <= -10)
+		if (player.GetY() <= -5)
 		{
 			gamewon = false;
 			GameOver();
@@ -440,7 +440,7 @@ void CMyGame::ShootHereController()
 		CSprite* platform = new CSpriteRect(660, 500, 200, 20, CColor::Black(), CColor::Black(), GetTime());	//Sixth Elevation
 		platform->SetProperty("tag", "black");
 		platforms.push_back(platform);
-		
+
 		NextLevel.SetPosition(710, 545);
 		NextLevel.SetSize(45, 68);
 
@@ -574,8 +574,8 @@ void CMyGame::MenuControl()
 		MenuLevel1.SetImage("MonochromeMenuLV1.bmp");
 		MenuLevel1.SetPosition(400, 300);
 	}
-	
-    if (MenuGameLV == 2)
+
+	if (MenuGameLV == 2)
 	{
 		MenuLevel2.LoadImage("MonochromeMenuLV2.bmp");
 		MenuLevel2.SetImage("MonochromeMenuLV2.bmp");
@@ -586,7 +586,7 @@ void CMyGame::MenuControl()
 	MenuLevel2.IsDeleted();
 	// Entering the Game if on level 1
 
-	
+
 }
 
 void CMyGame::OnDraw(CGraphics* g)
@@ -616,9 +616,9 @@ void CMyGame::OnDraw(CGraphics* g)
 	}
 	if (isWhite) { shoot_here.Draw(g); if (shootmode) { target.Draw(g); } }
 	if (shootmode) { ball.Draw(g); }
-	if(target_hit){ NextLevel.Draw(g); }
+	if (target_hit) { NextLevel.Draw(g); }
 	player.Draw(g);
-	
+
 	// Drawing the Menu Level 1
 	if (IsMenuMode() && MenuGameLV == 1)
 	{
@@ -683,10 +683,10 @@ void CMyGame::OnInitialize()
 	shoot_here.LoadImage("shoot_here.png");
 	shoot_here.SetImage("shoot_here.png");
 
-	target.LoadImage("target.png",CColor::White());
+	target.LoadImage("target.png", CColor::White());
 	target.SetImage("target.png");
 
-	NextLevel.LoadImage("door.png",CColor::White());
+	NextLevel.LoadImage("door.png", CColor::White());
 	NextLevel.SetImage("door.png");
 
 	player.LoadImage("player.png", "stand_right", 11, 6, 0, 0, CColor::White());
@@ -766,10 +766,10 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform = new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime());	// Floor
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
-		
+
 		platform = new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Left Wall
 		platform->SetProperty("tag", "wall");
-		platforms.push_back(platform);	
+		platforms.push_back(platform);
 
 		platform = new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Right Wall
 		platform->SetProperty("tag", "wall");
@@ -790,7 +790,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform = new CSpriteRect(190, 315, 310, 20, CColor::White(), CColor::White(), GetTime());	//Fourth Elevation
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
-		
+
 		platform = new CSpriteRect(465, 410, 255, 20, CColor::Black(), CColor::Black(), GetTime());	//Fifth Elevation
 		platform->SetProperty("tag", "black");
 		platforms.push_back(platform);
@@ -798,7 +798,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		collider = new CSprite(400, 50, 44, 44, "jump_sprite.png", GetTime());
 		collider->SetProperty("tag", "black_base");
 		colliders.push_back(collider);
-		
+
 		collider = new CSprite(170, 135, 44, 44, "jump_sprite_invert.png", GetTime());
 		collider->SetProperty("tag", "white_base");
 		colliders.push_back(collider);
