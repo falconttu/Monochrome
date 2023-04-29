@@ -461,7 +461,6 @@ void CMyGame::HealthBarControl()
 		Healthbar10.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 90)
 	{
 		Healthbar9.LoadImageW("90Health.bmp", CColor::White());
@@ -469,7 +468,6 @@ void CMyGame::HealthBarControl()
 		Healthbar9.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 80)
 	{
 		Healthbar8.LoadImageW("80Health.bmp", CColor::White());
@@ -477,7 +475,6 @@ void CMyGame::HealthBarControl()
 		Healthbar8.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 70)
 	{
 		Healthbar7.LoadImageW("70Health.bmp", CColor::White());
@@ -485,7 +482,6 @@ void CMyGame::HealthBarControl()
 		Healthbar7.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 60)
 	{
 		Healthbar6.LoadImageW("60Health.bmp", CColor::White());
@@ -493,7 +489,6 @@ void CMyGame::HealthBarControl()
 		Healthbar6.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 50)
 	{
 		Healthbar5.LoadImageW("50Health.bmp", CColor::White());
@@ -501,7 +496,6 @@ void CMyGame::HealthBarControl()
 		Healthbar5.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 40)
 	{
 		Healthbar4.LoadImageW("40Health.bmp", CColor::White());
@@ -509,7 +503,6 @@ void CMyGame::HealthBarControl()
 		Healthbar4.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 30)
 	{
 		Healthbar3.LoadImageW("30Health.bmp", CColor::White());
@@ -517,7 +510,6 @@ void CMyGame::HealthBarControl()
 		Healthbar3.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 20)
 	{
 		Healthbar2.LoadImageW("20Health.bmp", CColor::White());
@@ -525,7 +517,6 @@ void CMyGame::HealthBarControl()
 		Healthbar2.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 10)
 	{
 		Healthbar1.LoadImageW("10Health.bmp", CColor::White());
@@ -533,7 +524,6 @@ void CMyGame::HealthBarControl()
 		Healthbar1.SetPosition(100, 530);
 		return;
 	}
-
 	if (health == 0)
 	{
 		Healthbar0.LoadImageW("0Health.bmp", CColor::White());
@@ -541,7 +531,6 @@ void CMyGame::HealthBarControl()
 		Healthbar0.SetPosition(100, 530);
 		return;
 	}
-
 	Healthbar0.IsDeleted();
 	Healthbar1.IsDeleted();
 	Healthbar2.IsDeleted();
@@ -553,7 +542,6 @@ void CMyGame::HealthBarControl()
 	Healthbar8.IsDeleted();
 	Healthbar9.IsDeleted();
 	Healthbar10.IsDeleted();
-
 }
 
 void CMyGame::MenuControl()
@@ -562,19 +550,16 @@ void CMyGame::MenuControl()
 	{
 		MenuGameLV = 1;
 	}
-
 	if (IsKeyDown(SDLK_DOWN) || IsKeyDown(SDLK_s))
 	{
 		MenuGameLV = 2;
 	}
-
 	if (MenuGameLV == 1)
 	{
 		MenuLevel1.LoadImage("MonochromeMenuLV1.bmp");
 		MenuLevel1.SetImage("MonochromeMenuLV1.bmp");
 		MenuLevel1.SetPosition(400, 300);
 	}
-
 	if (MenuGameLV == 2)
 	{
 		MenuLevel2.LoadImage("MonochromeMenuLV2.bmp");
@@ -625,7 +610,6 @@ void CMyGame::OnDraw(CGraphics* g)
 		MenuLevel1.Draw(g);
 		return;
 	}
-
 	if (IsMenuMode() && MenuGameLV == 2)
 	{
 		MenuLevel2.Draw(g);
@@ -633,7 +617,6 @@ void CMyGame::OnDraw(CGraphics* g)
 	}
 
 	// Drawing The Health Bars
-
 	if (health == 100) Healthbar10.Draw(g);
 	if (health == 90) Healthbar9.Draw(g);
 	if (health == 80) Healthbar8.Draw(g);
