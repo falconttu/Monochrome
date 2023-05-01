@@ -54,6 +54,7 @@ public:
 	bool target_hit;
 	int final_plat;
 	bool spawn_stopper_plat;
+	int Level;
 
 	virtual void PlayerController();
 	virtual void JumpHereController();

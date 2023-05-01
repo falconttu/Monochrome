@@ -9,7 +9,7 @@ CMyGame::CMyGame(void) :
 	// to initialise more sprites here use a comma-separated list
 {
 	// TODO: add initialisation here
-
+	Level = 1;
 	// Initialising Integer which will control the Level picked via the game menu
 	MenuGameLV = 1;
 }
@@ -166,6 +166,9 @@ void CMyGame::OnUpdate()
 	shoot_here.Update(t);
 	target.Update(t);
 	if (target_hit) { NextLevel.Update(t); }
+
+	// Starting the next level once player hits door sprite
+	if (player.HitTest(&NextLevel)) Level++;
 	// Updating the HealthBar Control Function
 	HealthBarControl();
 
@@ -712,6 +715,8 @@ CSprite* collider;
 // called when a new level started - first call for nLevel = 1
 void CMyGame::OnStartLevel(Sint16 nLevel)
 {
+	nLevel = Level;
+
 	// Clean up first
 	for (CSprite* platforms : platforms)
 	{
@@ -719,6 +724,14 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	}
 	platforms.clear();
 	platforms.delete_all();
+
+	for (CSprite* colliders : colliders)
+	{
+		delete colliders;
+	}
+	colliders.clear();
+	colliders.delete_all();
+
 	isWhite = false;
 	//shootmode set to false
 	shootmode = false;
@@ -810,6 +823,16 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 
 	case 2:// Level 2 (EMPTY)
 
+		background.SetImage("white_back.png");
+
+		// spawn the player
+		player.SetPos(30, 35);
+		player.SetImage("stand_right");
+
+		// platforms
+		platform = new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime());	// Floor
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
 		break;
 	}
 
@@ -843,8 +866,15 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 	// Menu Level Selection
 	if (IsMenuMode())
 	{
-		if (IsKeyDown(SDLK_SPACE))
+		if (MenuGameLV == 1 && IsKeyDown(SDLK_SPACE))
 		{
+			Level = 1;
+			StartGame();
+		}
+
+		else if (MenuGameLV == 2 && IsKeyDown(SDLK_SPACE))
+		{
+			Level = 2;
 			StartGame();
 		}
 	}
