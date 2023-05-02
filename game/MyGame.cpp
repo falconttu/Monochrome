@@ -176,7 +176,7 @@ void CMyGame::OnUpdate()
 	if (target_hit) { NextLevel.Update(t); }
 
 	// Game is Won Once Player Hits the Door
-	if (player.HitTest(&NextLevel))
+	if (target_hit && player.HitTest(&NextLevel))
 	{
 		gamewon = true;
 		GameOver();
