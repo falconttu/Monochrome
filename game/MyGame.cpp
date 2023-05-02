@@ -66,6 +66,12 @@ void CMyGame::OnUpdate()
 	// Shoot Here Controller
 	ShootHereController();
 
+	// Shuriken Controller
+	if (Level == 2) ShurikenController();
+
+	// HealthBar Controller
+	HealthBarControl();
+
 	// Pre-Update Position
 	CVector v0 = player.GetPos();
 
@@ -153,24 +159,37 @@ void CMyGame::OnUpdate()
 	}
 
 	// Updates
-	for (CSprite* platform : platforms)
-	{
-		platform->Update(t);
-	}
+	for (CSprite* platform : platforms) platform->Update(t);
+	for (CSprite* shuriken : ShurikenList) shuriken->Update(t);
 	player.Update(t);
 	ball.Update(t);
 	for (CSprite* collider : colliders)
 	{
 		collider->Update(t);
 	}
+
+	// Player Death when Health is 0
+	if (player.GetHealth() <= 0) GameOver();
+
 	shoot_here.Update(t);
 	target.Update(t);
 	if (target_hit) { NextLevel.Update(t); }
 
-	// Starting the next level once player hits door sprite
-	if (player.HitTest(&NextLevel)) Level++;
-	// Updating the HealthBar Control Function
-	HealthBarControl();
+	// Game is Won Once Player Hits the Door
+	if (player.HitTest(&NextLevel))
+	{
+		gamewon = true;
+		GameOver();
+	}
+
+	// Deleting Enemy Sprite Once Leaving The Screen
+	for (CSprite* shuriken : ShurikenList)
+	{
+		if (shuriken->GetX() < 0 || shuriken->GetX() > 800)
+		{
+			shuriken->Delete();
+		}
+	}
 
 	// Updating the Menu Control Function
 	MenuControl();
@@ -361,6 +380,18 @@ void CMyGame::PlayerController()
 			GameOver();
 		}
 	}
+
+	// Player Damage
+	for (CSprite* shuriken : ShurikenList)
+	{
+		if (shuriken->HitTest(&player))
+		{
+			shuriken->Delete();
+			player.SetHealth(player.GetHealth() - 20);
+		}
+	}
+
+	ShurikenList.delete_if(deleted);
 }
 
 void CMyGame::JumpHereController()
@@ -438,7 +469,7 @@ void CMyGame::ShootHereController()
 		final_plat = 1;
 	}
 
-	if (final_plat == 1 && !spawn_stopper_plat)
+	if (Level == 1 && final_plat == 1 && !spawn_stopper_plat)
 	{
 		CSprite* platform = new CSpriteRect(660, 500, 200, 20, CColor::Black(), CColor::Black(), GetTime());	//Sixth Elevation
 		platform->SetProperty("tag", "black");
@@ -449,6 +480,62 @@ void CMyGame::ShootHereController()
 
 		final_plat = 2;
 		spawn_stopper_plat = true;
+	}
+
+	if (Level == 2 && final_plat == 1 && !spawn_stopper_plat)
+	{
+		CSprite* platform = new CSpriteRect(580, 460, 230, 20, CColor::Black(), CColor::Black(), GetTime()); //Final Elevation
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+
+		NextLevel.SetPosition(635, 505);
+		NextLevel.SetSize(45, 68);
+
+		final_plat = 2;
+		spawn_stopper_plat = true;
+	}
+}
+
+void CMyGame::ShurikenController()
+{
+	// Shuriken Enemy for First Elevation 
+	if (rand() % 500 == 0)
+	{
+		CSprite* shuriken = new CSprite(0, 180, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		shuriken->SetDirection(300, 0);
+		shuriken->SetOmega(200);
+		shuriken->SetSpeed(100);
+		ShurikenList.push_back(shuriken);
+	}
+
+	// Shuriken Enemy for Floor
+	if (rand() % 500 == 0)
+	{
+		CSprite* shuriken = new CSprite(800, 60, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		shuriken->SetDirection(-300, 0);
+		shuriken->SetOmega(-200);
+		shuriken->SetSpeed(100);
+		ShurikenList.push_back(shuriken);
+	}
+
+	// Shuriken Enemy for Third Elevation
+	if (rand() % 500 == 0)
+	{
+		CSprite* shuriken = new CSprite(0, 280, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		shuriken->SetDirection(300, 0);
+		shuriken->SetOmega(200);
+		shuriken->SetSpeed(150);
+		ShurikenList.push_back(shuriken);
+	}
+
+	// Enemy for Fourth Elevation
+	if (rand() % 500 == 0)
+	{
+		CSprite* shuriken = new CSprite(800, 380, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		shuriken->SetDirection(-300, 0);
+		shuriken->SetOmega(-200);
+		shuriken->SetSpeed(150);
+		ShurikenList.push_back(shuriken);
 	}
 }
 
@@ -581,10 +668,13 @@ void CMyGame::OnDraw(CGraphics* g)
 {
 	// Drawing The Background
 	background.Draw(g);
-	for (CSprite* p : platforms)
+	for (CSprite* p : platforms) p->Draw(g);
+
+	for (CSprite* shuriken : ShurikenList)
 	{
-		p->Draw(g);
+		if (Level == 2) shuriken->Draw(g);
 	}
+
 	for (CSprite* collider : colliders)
 	{
 		if (!isWhite)
@@ -613,6 +703,7 @@ void CMyGame::OnDraw(CGraphics* g)
 		MenuLevel1.Draw(g);
 		return;
 	}
+	// Drawing the Menu Level 2
 	if (IsMenuMode() && MenuGameLV == 2)
 	{
 		MenuLevel2.Draw(g);
@@ -645,12 +736,12 @@ void CMyGame::OnDraw(CGraphics* g)
 		}
 	}
 
-	//Keys collected counter
+	/*Keys collected counter
 	if (!IsGameOverMode())
 	{
 		*g << font(24) << color(CColor::Blue()) << xy(5, 580) << "Keys Collected:";
 		*g << font(24) << color(CColor::LightBlue()) << xy(175, 580) << keys_collected;
-	}
+	}*/
 }
 
 /////////////////////////////////////////////////////
@@ -707,7 +798,8 @@ void CMyGame::OnDisplayMenu()
 // called when a new game is started
 // as a second phase after a menu or a welcome screen
 void CMyGame::OnStartGame()
-{}
+{
+}
 
 CSprite* platform;
 CSprite* collider;
@@ -725,13 +817,19 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	platforms.clear();
 	platforms.delete_all();
 
+	for (CSprite* shuriken : ShurikenList)
+	{
+		delete shuriken;
+	}
+	ShurikenList.clear();
+	ShurikenList.delete_all();
+
 	for (CSprite* colliders : colliders)
 	{
 		delete colliders;
 	}
 	colliders.clear();
 	colliders.delete_all();
-
 	isWhite = false;
 	//shootmode set to false
 	shootmode = false;
@@ -747,10 +845,12 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	spawn_stopper_plat = false;
 
 
+
 	switch (nLevel)
 	{
 	case 1:// build Level 1 sprites
 
+		player.SetHealth(100);
 		// Loading the Background
 		background.SetImage("white_back.png");
 
@@ -823,6 +923,8 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 
 	case 2:// Level 2 (EMPTY)
 
+		player.SetHealth(100);
+
 		background.SetImage("white_back.png");
 
 		// spawn the player
@@ -833,7 +935,38 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform = new CSpriteRect(400, 10, 800, 20, CColor::White(), CColor::White(), GetTime());	// Floor
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
-		break;
+
+		platform = new CSpriteRect(-10, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Left Wall
+		platform->SetProperty("tag", "wall");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(810, 300, 10, 600, CColor::Black(), CColor::White(), GetTime());	// Right Wall
+		platform->SetProperty("tag", "wall");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(125, 130, 150, 20, CColor::White(), CColor::White(), GetTime()); //First White Elevation
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
+		
+		platform = new CSpriteRect(675, 130, 150, 20, CColor::White(), CColor::White(), GetTime()); //Second White Elevation
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(125, 330, 150, 20, CColor::White(), CColor::White(), GetTime()); //Third White Elevation
+		platform->SetProperty("tag", "white");
+		platforms.push_back(platform);
+
+		platform = new CSpriteRect(400, 230, 150, 20, CColor::Black(), CColor::Black(), GetTime()); //First Black Elevation
+		platform->SetProperty("tag", "black");
+		platforms.push_back(platform);
+
+		shoot_here.SetPosition(420, 270);
+		shoot_here.SetSize(44, 44);
+
+		ball.SetPos(535, 265);
+		ball.SetPivotFromCenter(0, 0);
+		ball.SetVelocity(0, 0);
+		aiming = false;
 	}
 
 	// any initialisation common to all levels
@@ -926,6 +1059,7 @@ void CMyGame::OnLButtonUp(Uint16 x, Uint16 y)
 		ball.SetVelocity(8.5 * fx, 8.5 * fy);
 		shot = true;
 	}
+
 }
 
 void CMyGame::OnRButtonDown(Uint16 x, Uint16 y)

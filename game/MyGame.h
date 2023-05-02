@@ -14,6 +14,7 @@ class CMyGame : public CGame
 	CSprite shoot_here;
 	CSprite target;
 	CSprite NextLevel;
+	CSpriteList ShurikenList; // List of Enemy Sprites
 
 
 	bool back_colour;
@@ -56,16 +57,19 @@ public:
 	bool spawn_stopper_plat;
 	int Level;
 
+	// All New Member Functions
 	virtual void PlayerController();
 	virtual void JumpHereController();
 	virtual void ShootHereController();
+	virtual void ShurikenController();
+	virtual void HealthBarControl();
 
 	// Per-Frame Callback Funtions (must be implemented!)
 	virtual void OnUpdate();
 	virtual void OnDraw(CGraphics* g);
 
 	// Game Life Cycle
-	virtual void HealthBarControl();
+	
 	virtual void OnInitialize();
 	virtual void OnDisplayMenu();
 	virtual void OnStartGame();
