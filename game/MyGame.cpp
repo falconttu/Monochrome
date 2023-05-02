@@ -501,7 +501,7 @@ void CMyGame::ShurikenController()
 	// Shuriken Enemy for First Elevation 
 	if (rand() % 500 == 0)
 	{
-		CSprite* shuriken = new CSprite(0, 180, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		CSprite* shuriken = new CSprite(0, 180, "EnemyShuriken.bmp", CColor::White(), GetTime());
 		shuriken->SetDirection(300, 0);
 		shuriken->SetOmega(200);
 		shuriken->SetSpeed(100);
@@ -511,7 +511,7 @@ void CMyGame::ShurikenController()
 	// Shuriken Enemy for Floor
 	if (rand() % 500 == 0)
 	{
-		CSprite* shuriken = new CSprite(800, 60, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		CSprite* shuriken = new CSprite(800, 60, "EnemyShuriken.bmp", CColor::White(), GetTime());
 		shuriken->SetDirection(-300, 0);
 		shuriken->SetOmega(-200);
 		shuriken->SetSpeed(100);
@@ -521,7 +521,7 @@ void CMyGame::ShurikenController()
 	// Shuriken Enemy for Third Elevation
 	if (rand() % 500 == 0)
 	{
-		CSprite* shuriken = new CSprite(0, 280, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		CSprite* shuriken = new CSprite(0, 280, "EnemyShuriken.bmp", CColor::White(), GetTime());
 		shuriken->SetDirection(300, 0);
 		shuriken->SetOmega(200);
 		shuriken->SetSpeed(150);
@@ -531,7 +531,7 @@ void CMyGame::ShurikenController()
 	// Enemy for Fourth Elevation
 	if (rand() % 500 == 0)
 	{
-		CSprite* shuriken = new CSprite(800, 380, "EnemyShuriken.bmp", CColor::White(), GetTime());  
+		CSprite* shuriken = new CSprite(800, 380, "EnemyShuriken.bmp", CColor::White(), GetTime());
 		shuriken->SetDirection(-300, 0);
 		shuriken->SetOmega(-200);
 		shuriken->SetSpeed(150);
@@ -848,7 +848,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 
 	switch (nLevel)
 	{
-	case 1:// build Level 1 sprites
+	case 2:// build Level 1 sprites
 
 		player.SetHealth(100);
 		// Loading the Background
@@ -921,7 +921,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 
 		break;
 
-	case 2:// Level 2 (EMPTY)
+	case 1:// Level 2 (EMPTY)
 
 		player.SetHealth(100);
 
@@ -947,7 +947,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		platform = new CSpriteRect(125, 130, 150, 20, CColor::White(), CColor::White(), GetTime()); //First White Elevation
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
-		
+
 		platform = new CSpriteRect(675, 130, 150, 20, CColor::White(), CColor::White(), GetTime()); //Second White Elevation
 		platform->SetProperty("tag", "white");
 		platforms.push_back(platform);
